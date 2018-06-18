@@ -63,7 +63,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\AngleSharp.Performance.Common\AngleSharp.Performance.Common.csproj">
-      <Project>{cb9d1e29-d529-4525-b139-2a25115bca96}</Project>
+      <Project>{18f73b00-4aa1-4f9c-88f6-322938ffb987}</Project>
       <Name>AngleSharp.Performance.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\AngleSharp.Performance.Utilities\AngleSharp.Performance.Utilities.csproj">
