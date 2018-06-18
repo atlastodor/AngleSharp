@@ -16,7 +16,6 @@ using Octokit;
 
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
-var skipDotNetCore = Argument("skip-dotnet-core", "no") == "yes";
 var isLocal = BuildSystem.IsLocalBuild;
 var isRunningOnUnix = IsRunningOnUnix();
 var isRunningOnWindows = IsRunningOnWindows();
@@ -52,14 +51,7 @@ Task("Restore-Packages")
     .IsDependentOn("Clean")
     .Does(() =>
     {
-        NuGetRestore("./src/AngleSharp.Core.sln", new NuGetRestoreSettings {
-            ToolPath = "tools/nuget_old.exe"
-        });
-
-        if (!skipDotNetCore)
-        {
-            DotNetCoreRestore("./src/AngleSharp/project.json");
-        }
+        NuGetRestore("./src/AngleSharp.Core.sln", new NuGetRestoreSettings { });
     });
 
 Task("Build")
@@ -70,7 +62,7 @@ Task("Build")
         {
             MSBuild("./src/AngleSharp.Core.sln", new MSBuildSettings()
                 .SetConfiguration(configuration)
-                .UseToolVersion(MSBuildToolVersion.VS2015)
+                .UseToolVersion(MSBuildToolVersion.VS2017)
                 .SetPlatformTarget(PlatformTarget.MSIL)
                 .SetMSBuildPlatform(MSBuildPlatform.x86)
                 .SetVerbosity(Verbosity.Minimal)
@@ -82,14 +74,6 @@ Task("Build")
                 .SetConfiguration(configuration)
                 .SetVerbosity(Verbosity.Minimal)
             );
-        }
-
-        if (!skipDotNetCore)
-        {
-            DotNetCoreBuild("./src/AngleSharp/project.json", new DotNetCoreBuildSettings
-            {
-                Configuration = configuration
-            });
         }
     });
 
@@ -116,11 +100,12 @@ Task("Copy-Files")
     {
         var mapping = new Dictionary<String, String>
         {
+			// NuGet package folder, Bin output folder
             { "net45", "net45" },
-            { "portable-windows8+net45+windowsphone8+wpa+monoandroid+monotouch", "portable45-net45+win8+wp8+wpa81" },
+            { "portable-windows8+net45+windowsphone8+wpa+monoandroid+monotouch", "portable-net45+win8+wpa81+wp8" },
             { "netstandard1.0", "netstandard1.0" },
+			{ "netstandard2.0", "netstandard2.0" },
             { "net40", "net40" },
-            { "sl50", "sl5" },
         };
 
         foreach (var item in mapping)

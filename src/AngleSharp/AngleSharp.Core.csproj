@@ -10,13 +10,14 @@
     <PackageLicenseUrl>https://github.com/AngleSharp/AngleSharp/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://anglesharp.github.io</PackageProjectUrl>
     <PackageIconUrl>https://raw.github.com/AngleSharp/AngleSharp/master/logo.png</PackageIconUrl>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <Description>AngleSharp is the ultimate angle brackets parser library. It parses HTML5, CSS3, and XML to construct a DOM based on the official W3C specification.</Description>
     <PackageReleaseNotes>For all changes see: https://github.com/AngleSharp/AngleSharp/wiki/ChangeLog.</PackageReleaseNotes>
     <Copyright>Copyright 2018, AngleSharp.</Copyright>
     <PackageTags>html html5 css css3 xml dom dom4 parser engine hypertext markup language query selector attributes linq angle bracket web internet text headless browser</PackageTags>
     <RootNamespace>AngleSharp</RootNamespace>
     <AssemblyName>AngleSharp</AssemblyName>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFrameworkVersion)\AngleSharp.xml</DocumentationFile>
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(TargetFramework)' == 'portable-net45+win8+wpa81+wp8'">
@@ -26,7 +27,7 @@
     <NugetTargetMoniker>.NETPortable,Version=v0.0,Profile=Profile259</NugetTargetMoniker>
     <LanguageTargets>$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets</LanguageTargets>
   </PropertyGroup>
-
+  
   <ItemGroup Condition="'$(TargetFramework)' == 'net40'">
     <PackageReference Include="Microsoft.Bcl.Async" Version="1.0.168" />
   </ItemGroup>
