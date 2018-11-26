@@ -3,13 +3,6 @@
     <TargetFramework>net462</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <WCFMetadata Include="Connected Services\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\AngleSharp.Performance.Common\AngleSharp.Performance.Common.csproj">
-      <Project>{18f73b00-4aa1-4f9c-88f6-322938ffb987}</Project>
-      <Name>AngleSharp.Performance.Common</Name>
-    </ProjectReference>
     <ProjectReference Include="..\AngleSharp.Performance.Common\AngleSharp.Performance.Common.csproj" />
   </ItemGroup>
 </Project>
