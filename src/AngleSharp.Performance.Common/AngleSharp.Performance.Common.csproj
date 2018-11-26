@@ -26,3 +26,11 @@
     <PackageReference Include="System.Net.Requests" Version="4.0.11" />
   </ItemGroup>
 </Project>
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AngleSharp\AngleSharp.Core.csproj" />
+  </ItemGroup>
+</Project>

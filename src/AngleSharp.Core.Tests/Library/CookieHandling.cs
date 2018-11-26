@@ -251,9 +251,9 @@ namespace AngleSharp.Core.Tests.Library
 
                 Assert.AreEqual(@"{
   ""cookies"": {
-    ""foo"": ""bar"", 
-    ""k1"": ""v1"", 
-    ""k2"": ""v2"", 
+    ""foo"": ""bar"",
+    ""k1"": ""v1"",
+    ""k2"": ""v2"",
     ""test"": ""baz""
   }
 }
@@ -267,7 +267,7 @@ namespace AngleSharp.Core.Tests.Library
             if (Helper.IsNetworkAvailable())
             {
                 var cookieUrl = "https://httpbin.org/cookies/set?test=baz";
-                var redirectUrl = "http://httpbin.org/redirect-to?url=http%3A%2F%2Fhttpbin.org%2Fcookies";
+                var redirectUrl = "https://httpbin.org/redirect-to?url=https%3A%2F%2Fhttpbin.org%2Fcookies";
                 var config = Configuration.Default.WithCookies().WithDefaultLoader();
                 var context = BrowsingContext.New(config);
                 await context.OpenAsync(cookieUrl);
@@ -388,6 +388,14 @@ namespace AngleSharp.Core.Tests.Library
                                         .Header(HeaderNames.SetCookie, cookieValue));
 
             await context.OpenAsync("http://localhost/");
+        }
+
+        [Test]
+        public void DateTimeShouldBeAccepted_Issue663()
+        {
+            var mcp = new MemoryCookieProvider();
+            var url = Url.Create("http://www.example.com");
+            mcp.SetCookie(url, "c-s=expires=1531601411~access=/clientimg/richmond/*!/content/richmond/*~md5=c56447496f01a9cd01bbec1b3a293357; path=/; secure");
         }
 
         private static Task<IDocument> LoadDocumentWithFakeRequesterAndCookie(IResponse initialResponse, Func<Request, IResponse> onRequest)

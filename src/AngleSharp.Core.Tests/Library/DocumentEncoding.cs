@@ -1,4 +1,4 @@
-﻿namespace AngleSharp.Core.Tests.Library
+namespace AngleSharp.Core.Tests.Library
 {
     using AngleSharp;
     using AngleSharp.Html.Dom;
@@ -24,6 +24,7 @@
         }
 
         [Test]
+        [Platform(Exclude = "NetCore")]
         public void JdEncodingDisplayCharacters()
         {
             var configEnUs = Configuration.Default.SetCulture("en-US").WithLocaleBasedEncoding();
@@ -36,6 +37,7 @@
         }
 
         [Test]
+        [Platform(Exclude = "NetCore", Reason = "Encoding support is limited on netcore platform")]
         public void TradeEncodingDisplayCharactersFromWindows1252()
         {
             var config = Configuration.Default.SetCulture("de-de").WithLocaleBasedEncoding();
@@ -98,6 +100,7 @@
         }
 
         [Test]
+        [Platform(Exclude = "NetCore", Reason = "Encoding support is limited on netcore platform")]
         public void EncodingCheckWindows1251TestPage()
         {
             var source = Helper.StreamFromBytes(Assets.windows_1251);
@@ -116,6 +119,7 @@
         }
 
         [Test]
+        [Platform(Exclude = "NetCore", Reason = "Encoding support is limited on netcore platform")]
         public void EncodingCheckRealShiftJisTestPage()
         {
             var source = Helper.StreamFromBytes(Assets.real_shift_jit);
@@ -127,6 +131,7 @@
         }
 
         [Test]
+        [Platform(Exclude = "NetCore", Reason = "Encoding support is limited on netcore platform")]
         public void EncodingCheckGb2312TestPage()
         {
             var source = Helper.StreamFromBytes(Assets.gb2312);
@@ -136,6 +141,7 @@
         }
 
         [Test]
+        [Platform(Exclude = "NetCore", Reason = "Encoding support is limited on netcore platform")]
         public void EncodingCheckGb18030TestPage()
         {
             var source = Helper.StreamFromBytes(Assets.gb18030);
@@ -145,6 +151,7 @@
         }
 
         [Test]
+        [Platform(Exclude = "NetCore", Reason = "Encoding support is limited on netcore platform")]
         public void EncodingCheckBig5TestPage()
         {
             var source = Helper.StreamFromBytes(Assets.big5);
@@ -179,6 +186,7 @@
         }
 
         [Test]
+        [Platform(Exclude = "NetCore")]
         public async Task EncodingFromHeaderAtAmazonFranceSubpageWithConflictingEofCharacter()
         {
             var content = Helper.StreamFromBytes(Assets.amazonenc);
@@ -195,6 +203,7 @@
         }
 
         [Test]
+        [Platform(Exclude = "NetCore", Reason = "Encoding support is limited on netcore platform")]
         public async Task EncodingFromHeaderShouldHaveHigherPrecedence()
         {
             var raw = new Byte[] { 60, 109, 101, 116, 97, 32, 99, 104, 97, 114, 115, 101, 116, 61, 117, 116, 102, 45, 56, 62, 238 };
@@ -220,6 +229,20 @@
 
             Assert.AreEqual("utf-8", document.CharacterSet);
             Assert.AreEqual("î", document.Body.TextContent);
+        }
+
+        [Test]
+        public async Task EncodingCanWorkWithUnicodeNonCharacter()
+        {
+            var raw = new Byte[] { 60, 104, 116, 109, 108, 62, 13, 10, 32, 32, 32, 32, 60, 98, 111, 100, 121, 62, 13, 10, 32, 32, 32, 32, 32, 32, 32, 32, 60, 116, 97, 98, 108, 101, 62, 13, 10, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 60, 116, 98, 111, 100, 121, 62, 13, 10, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 60, 116, 114, 62, 13, 10, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 60, 104, 50, 32, 105, 100, 61, 34, 99, 116, 108, 48, 48, 95, 99, 112, 104, 82, 111, 98, 108, 111, 120, 95, 80, 111, 115, 116, 86, 105, 101, 119, 49, 95, 99, 116, 108, 48, 48, 95, 80, 111, 115, 116, 84, 105, 116, 108, 101, 34, 32, 67, 115, 115, 67, 108, 97, 115, 115, 61, 34, 110, 111, 116, 114, 97, 110, 115, 108, 97, 116, 101, 34, 32, 115, 116, 121, 108, 101, 61, 34, 109, 97, 114, 103, 105, 110, 45, 98, 111, 116, 116, 111, 109, 58, 50, 48, 112, 120, 34, 62, 239, 191, 191, 239, 191, 191, 32, 65, 32, 103, 114, 101, 97, 116, 32, 103, 114, 111, 117, 112, 32, 102, 111, 114, 32, 115, 97, 108, 101, 239, 191, 191, 239, 191, 191, 60, 47, 104, 50, 62, 13, 10, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 60, 47, 116, 114, 62, 13, 10, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 60, 116, 114, 62, 13, 10, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 60, 115, 112, 97, 110, 32, 105, 100, 61, 34, 99, 116, 108, 48, 48, 95, 99, 112, 104, 82, 111, 98, 108, 111, 120, 95, 80, 111, 115, 116, 86, 105, 101, 119, 49, 95, 99, 116, 108, 48, 48, 95, 80, 97, 103, 101, 114, 34, 62, 13, 10, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 60, 47, 116, 114, 62, 13, 10, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 60, 47, 116, 98, 111, 100, 121, 62, 13, 10, 32, 32, 32, 32, 32, 32, 32, 32, 60, 47, 116, 97, 98, 108, 101, 62, 13, 10, 32, 32, 32, 32, 60, 47, 98, 111, 100, 121, 62, 13, 10, 60, 47, 104, 116, 109, 108, 62 };
+            var content = Helper.StreamFromBytes(raw);
+            var config = Configuration.Default;
+            var document = await BrowsingContext.New(config).OpenAsync(res =>
+                res.Content(content).
+                    Header(HeaderNames.ContentType, "text/html; charset=utf-8"));
+
+            var element = document.GetElementById("ctl00_cphRoblox_PostView1_ctl00_Pager");
+            Assert.IsNotNull(element);
         }
     }
 }

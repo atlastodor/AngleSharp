@@ -1,4 +1,4 @@
-﻿namespace AngleSharp.Dom
+namespace AngleSharp.Dom
 {
     using AngleSharp.Css.Parser;
     using AngleSharp.Dom.Events;
@@ -370,6 +370,29 @@
             return sg.Match(this, this);
         }
 
+        public IElement Closest(String selectorText)
+        {
+            var parser = Context.GetService<ICssSelectorParser>();
+            var sg = parser.ParseSelector(selectorText);
+
+            if (sg == null)
+                throw new DomException(DomError.Syntax);
+
+            IElement node = this;
+            while (node != null)
+            {
+                if (sg.Match(node, node))
+                {
+                    return node;
+                }
+                else
+                {
+                    node = node.ParentElement;
+                }
+            }
+            return null;
+        }
+
         public Boolean HasAttribute(String name)
         {
             if (_namespace.Is(NamespaceNames.HtmlUri))
@@ -571,6 +594,23 @@
 
         internal virtual void SetupElement()
         {
+            var attrs = _attributes;
+
+            if (attrs.Length > 0)
+            {
+                var observers = Context.GetServices<IAttributeObserver>();
+
+                foreach (var attr in attrs)
+                {
+                    var name = attr.LocalName;
+                    var value = attr.Value;
+
+                    foreach (var observer in observers)
+                    {
+                        observer.NotifyChange(this, name, value);
+                    }
+                }
+            }
         }
 
         internal void AttributeChanged(String localName, String namespaceUri, String oldValue, String newValue)

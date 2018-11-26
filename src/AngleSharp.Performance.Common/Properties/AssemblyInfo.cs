@@ -1,9 +1,7 @@
 using System.Reflection;
 using System.Resources;
 
-// NB: The normal attributes like AssemblyTitle, AssemblyDescription, AssemblyProduct, AssemblyFileVersion etc.
-// are now set by the MSBuild system from the project properties. See "Package" tab-page under the project properties.
-
+[assembly: AssemblyCopyright("Copyright © AngleSharp, 2013-2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: NeutralResourcesLanguage("en")]

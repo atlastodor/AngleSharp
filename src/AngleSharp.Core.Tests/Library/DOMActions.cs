@@ -1293,5 +1293,34 @@
             newdocument.Body.Replace(import);
             Assert.AreEqual(import, newdocument.Body);
         }
+
+        [Test]
+        public async Task SettingLinksBackRemainsRelative_Issue659()
+        {
+            var source = @"<a href=""/home.htm"">Foo</a>";
+            var cfg = Configuration.Default;
+            var document = await BrowsingContext.New(cfg).OpenAsync(res => res.Content(source).Address("http://example.com"));
+            var a = document.QuerySelector<IHtmlAnchorElement>("a");
+
+            Assert.AreEqual("http://example.com/home.htm", a.Href);
+            Assert.AreEqual("/home.htm", a.GetAttribute("href"));
+
+            a.Href = "/foo.htm";
+
+            Assert.AreEqual("http://example.com/foo.htm", a.Href);
+            Assert.AreEqual("/foo.htm", a.GetAttribute("href"));
+        }
+
+        [Test]
+        public void GetClosestAncestor()
+        {
+            var document = Create(@"<div id=""div1""><div id=""div2""><table><tr><td id=""exampletd""><div id=""div3""></div></td></tr><tr></tr></table></div></div>");
+            var cell = document.QuerySelector("#exampletd") as IHtmlTableCellElement;
+
+            Assert.IsNotNull(cell);
+            Assert.AreEqual(cell.Closest("td"), cell);
+            Assert.AreEqual(cell.Closest("a"), null);
+            Assert.AreEqual(cell.Closest("div"), document.QuerySelector("#div2"));
+        }
     }
 }

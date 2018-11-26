@@ -16,7 +16,7 @@ using Octokit;
 
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Release");
-var isLocal = BuildSystem.IsLocalBuild;
+var skipDotNetCore = Argument("skip-dotnet-core", "no") == "yes";
 var isRunningOnUnix = IsRunningOnUnix();
 var isRunningOnWindows = IsRunningOnWindows();
 var isRunningOnAppVeyor = AppVeyor.IsRunningOnAppVeyor;
@@ -51,47 +51,39 @@ Task("Restore-Packages")
     .IsDependentOn("Clean")
     .Does(() =>
     {
-        NuGetRestore("./src/AngleSharp.Core.sln", new NuGetRestoreSettings { });
+        NuGetRestore("./src/AngleSharp.Core.sln", new NuGetRestoreSettings {
+            ToolPath = "tools/nuget.exe"
+        });
     });
 
 Task("Build")
     .IsDependentOn("Restore-Packages")
     .Does(() =>
     {
-        if (isRunningOnWindows)
-        {
-            MSBuild("./src/AngleSharp.Core.sln", new MSBuildSettings()
-                .SetConfiguration(configuration)
-                .UseToolVersion(MSBuildToolVersion.VS2017)
-                .SetPlatformTarget(PlatformTarget.MSIL)
-                .SetMSBuildPlatform(MSBuildPlatform.x86)
-                .SetVerbosity(Verbosity.Minimal)
-            );
-        }
-        else
-        {
-            XBuild("./src/AngleSharp.Core.sln", new XBuildSettings()
-                .SetConfiguration(configuration)
-                .SetVerbosity(Verbosity.Minimal)
-            );
-        }
+        DotNetCoreBuild("./src/AngleSharp.Core.sln", new DotNetCoreBuildSettings() {
+           Configuration = configuration
+        });
     });
 
 Task("Run-Unit-Tests")
     .IsDependentOn("Build")
     .Does(() =>
     {
-        var settings = new NUnit3Settings
+        var settings = new DotNetCoreTestSettings()
         {
-            Work = buildResultDir.Path.FullPath
+            Configuration = configuration
         };
 
         if (isRunningOnAppVeyor)
         {
-            settings.Where = "cat != ExcludeFromAppVeyor";
+            settings.TestAdapterPath = Directory(".");
+            settings.Logger = "Appveyor";
+            // TODO Finds a way to exclude tests not allowed to run on appveyor
+            // Not used in current code
+            //settings.Where = "cat != ExcludeFromAppVeyor";
         }
 
-        NUnit3("./src/**/bin/" + configuration + "/*.Tests.dll", settings);
+        DotNetCoreTest("./src/AngleSharp.Core.Tests/", settings);
     });
 
 Task("Copy-Files")
@@ -100,12 +92,8 @@ Task("Copy-Files")
     {
         var mapping = new Dictionary<String, String>
         {
-			// NuGet package folder, Bin output folder
             { "net45", "net45" },
-            { "portable-windows8+net45+windowsphone8+wpa+monoandroid+monotouch", "portable-net45+win8+wpa81+wp8" },
-            { "netstandard1.0", "netstandard1.0" },
-			{ "netstandard2.0", "netstandard2.0" },
-            { "net40", "net40" },
+            { "netstandard2.0", "netstandard2.0" }
         };
 
         foreach (var item in mapping)
@@ -147,7 +135,6 @@ Task("Create-Package")
 
 Task("Publish-Package")
     .IsDependentOn("Create-Package")
-    .WithCriteria(() => isLocal)
     .Does(() =>
     {
         var apiKey = EnvironmentVariable("NUGET_API_KEY");
@@ -169,7 +156,6 @@ Task("Publish-Package")
 
 Task("Publish-Release")
     .IsDependentOn("Publish-Package")
-    .WithCriteria(() => isLocal)
     .Does(() =>
     {
         var githubToken = EnvironmentVariable("GITHUB_API_TOKEN");
